@@ -13,6 +13,7 @@ Item {
         plasmoid.configuration.limitBrightnessMax = limitBrightnessMaxConfig.value
         plasmoid.configuration.limitBrightnessMin = limitBrightnessMinConfig.value
         plasmoid.configuration.limitDimness = limitDimnessConfig.value
+        plasmoid.configuration.slimIcon = slimIconConfig.checked;
     }
 
     ColumnLayout {
@@ -85,5 +86,12 @@ Item {
 
             }
         }
+        
+        CheckBox {
+            id: slimIconConfig
+            text: "Slim icon (restart required)"
+            checked: plasmoid.configuration.slimIcon
+        }
+        
     }
 }

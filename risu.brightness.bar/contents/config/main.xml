@@ -17,5 +17,8 @@
     <entry name="limitDimness" type="double">
       <default>0.300</default>
     </entry>
+    <entry name="slimIcon" type="bool">
+      <default>true</default>
+    </entry>
   </group>
 </kcfg>

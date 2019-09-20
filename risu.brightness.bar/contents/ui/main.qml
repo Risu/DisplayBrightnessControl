@@ -3,7 +3,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.2
-import QtQuick.Controls 1.4 as Controls1
+import QtQuick.Controls 1.6 as Controls1
 import QtQuick.Window 2.0
 import QtQuick.Dialogs 1.2
 import org.kde.plasma.plasmoid 2.0
@@ -15,10 +15,11 @@ Item {
     property Item seekbar
     property bool ignoreChange : false
     property bool dimmed : false
+    property var lastReal: -1
 
     Plasmoid.icon: {
         source: {
-            plasmoid.Layout.maximumWidth = 20;
+            if(plasmoid.configuration.slimIcon) plasmoid.Layout.maximumWidth = 20;
             return "lighttable"
         }
     }
@@ -26,7 +27,7 @@ Item {
     Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
     Plasmoid.fullRepresentation: Item {
         id: popup
-        width: 100
+        width: 90
         height: (Screen.desktopAvailableHeight/2)
         GroupBox {
             anchors.fill: parent
@@ -49,7 +50,7 @@ Item {
                 anchors.centerIn: parent
                 height: parent.height;
                 orientation: Qt.Vertical
-                value: (powerMan.data["PowerDevil"]["Screen Brightness"] - brigthnessMax)
+                value: { if(!dimmed) {lastReal = powerMan.data["PowerDevil"]["Screen Brightness"]; return (lastReal - brigthnessMax); } else return (lastReal - brigthnessMax); }
                 stepSize: 1
                 minimumValue: -(brigthnessMax *2)
                 maximumValue: 0
@@ -64,13 +65,14 @@ Item {
                             if(realValue < plasmoid.configuration.limitBrightnessMin) realValue = plasmoid.configuration.limitBrightnessMin;
                             cmd.exec("qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl setBrightness "+realValue+";");
                             cmd.exec('xrandr --output "'+plasmoid.configuration.output+'" --brightness 1.0;');
+                            lastReal = realValue;
                             dimmed = false;
                         } else{ 
                             var floatValue = -realValue;
                             var ranValue = floatValue / brigthnessMax;
                             ranValue = (1.000-ranValue).toFixed(3);
                             if(ranValue < plasmoid.configuration.limitDimness)  ranValue = plasmoid.configuration.limitDimness;
-                            ignoreChange = true;
+                            if(!dimmed && lastReal != 1) ignoreChange = true;
                             cmd.exec("qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl setBrightness 1;");
                             cmd.exec('xrandr --output "'+plasmoid.configuration.output+'" --brightness '+ranValue+';');
                             dimmed = true;
@@ -161,7 +163,8 @@ Item {
             } else {
                 if(seekbar != null) {
                     if(powerMan.data["PowerDevil"] && powerMan.data["PowerDevil"]["Screen Brightness Available"]) {
-                        seekbar.value = (powerMan.data["PowerDevil"]["Screen Brightness"] - brigthnessMax);
+                        lastReal = powerMan.data["PowerDevil"]["Screen Brightness"];
+                        seekbar.value = (lastReal - brigthnessMax);
                         if(dimmed) {
                             cmd.exec('xrandr --output "'+plasmoid.configuration.output+'" --brightness 1.0;');
                             dimmed = false;

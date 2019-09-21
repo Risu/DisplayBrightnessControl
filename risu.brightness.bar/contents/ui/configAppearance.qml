@@ -35,7 +35,11 @@ Item {
                     Label {
                         text: "Limit maximal brigthness:"
                     }
-
+                    
+                    Item {
+                         Layout.fillWidth: true
+                    }
+                    
                     Controls1.SpinBox {
                         id: limitBrightnessMaxConfig
                         value: plasmoid.configuration.limitBrightnessMax
@@ -53,7 +57,11 @@ Item {
                     Label {
                         text: "Limit minimal brigthness:"
                     }
-
+                    
+                    Item {
+                         Layout.fillWidth: true
+                    }
+                    
                     Controls1.SpinBox {
                         id: limitBrightnessMinConfig
                         value: plasmoid.configuration.limitBrightnessMin
@@ -71,7 +79,11 @@ Item {
                     Label {
                         text: "Limit minimal dimness:"
                     }
-
+                    
+                    Item {
+                         Layout.fillWidth: true
+                    }
+                    
                     Controls1.SpinBox {
                         id: limitDimnessConfig
                         value: plasmoid.configuration.limitDimness

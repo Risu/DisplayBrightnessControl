@@ -13,7 +13,6 @@ Item {
     id: main
     property var brigthnessMax : 0
     property Item seekbar
-    property bool ignoreChange : false
     property bool dimmed : false
     property var lastReal: -1
 
@@ -61,22 +60,21 @@ Item {
                         cmd.exec("xrandr -q");
                         var realValue = (brigthnessMax +  bControl.value);
                         if(realValue >= 0) { 
+                            dimmed = false;
                             if(realValue > plasmoid.configuration.limitBrightnessMax) realValue = plasmoid.configuration.limitBrightnessMax;
                             if(realValue < plasmoid.configuration.limitBrightnessMin) realValue = plasmoid.configuration.limitBrightnessMin;
                             cmd.exec("qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl setBrightness "+realValue+";");
                             cmd.exec('xrandr --output "'+plasmoid.configuration.output+'" --brightness 1.0;');
-                            lastReal = realValue;
-                            dimmed = false;
                         } else{ 
                             var floatValue = -realValue;
                             var ranValue = floatValue / brigthnessMax;
                             ranValue = (1.000-ranValue).toFixed(3);
                             if(ranValue < plasmoid.configuration.limitDimness)  ranValue = plasmoid.configuration.limitDimness;
-                            if(!dimmed && lastReal != 1) ignoreChange = true;
                             cmd.exec("qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/BrightnessControl setBrightness 1;");
                             cmd.exec('xrandr --output "'+plasmoid.configuration.output+'" --brightness '+ranValue+';');
                             dimmed = true;
                         }
+                        lastReal = realValue;
                     }
                 }
 
@@ -158,12 +156,11 @@ Item {
             disconnectSource(source);
         }
         onDataChanged: {
-            if(ignoreChange) {
-                ignoreChange = false;
-            } else {
-                if(seekbar != null) {
-                    if(powerMan.data["PowerDevil"] && powerMan.data["PowerDevil"]["Screen Brightness Available"]) {
-                        lastReal = powerMan.data["PowerDevil"]["Screen Brightness"];
+            if(seekbar != null) {
+                if(powerMan.data["PowerDevil"] && powerMan.data["PowerDevil"]["Screen Brightness Available"]) {
+                    var tmpBri = powerMan.data["PowerDevil"]["Screen Brightness"];
+                    if (tmpBri > 1) {
+                        lastReal = tmpBri;
                         seekbar.value = (lastReal - brigthnessMax);
                         if(dimmed) {
                             cmd.exec('xrandr --output "'+plasmoid.configuration.output+'" --brightness 1.0;');

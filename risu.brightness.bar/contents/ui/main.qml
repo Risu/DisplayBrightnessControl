@@ -164,7 +164,7 @@ Item {
                         lastReal = tmpBri;
                         seekbar.value = (lastReal - brigthnessMax);
                         if(dimmed) {
-                            cmd.exec('xrandr --output "'+plasmoid.configuration.output+'" --brightness 1.0;');
+                            cmd.exec('xrandr  --output "'+plasmoid.configuration.output+'" --brightness 1.0;');
                             dimmed = false;
                         }
                     }
@@ -187,6 +187,7 @@ Item {
             disconnectSource(sourceName)
         }
         function exec(cmdstr) {
+            console.log("exec: " + cmdstr);
             connectSource(cmdstr)
         }
         signal exited(int exitCode, int exitStatus, string stdout, string stderr)

@@ -91,11 +91,12 @@ Item {
             if(exitCode == 0 && exitStatus == 0){
                 if(stdout != null && stdout.length > 5){
                     if(stdout.substring(0, 6) === "Screen"){
-                        var array = stdout.split('\n');
-                        if(array.length > 1){
-                            var out = array[1].substring(0,  (array[1].indexOf("connected") -1));
-                            if(out.length > 0){
-                                plasmoid.configuration.output = out;
+                        for (const line of stdout.split('\n')) {
+                            const pos = line.indexOf(" connected")
+                            if (pos > -1) {
+                                const output = line.substring(0, pos);
+                                plasmoid.configuration.output = output;
+                                break;
                             }
                         }
                     }

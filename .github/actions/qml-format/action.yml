@@ -1,0 +1,10 @@
+name: 'qmlfmt'
+description: 'Github Action that check if qml code is formatted correctly'
+branding:
+  icon: 'align-left'
+  color: 'green'
+runs:
+  using: 'strixcode/qmlfmt'
+  #image: 'Dockerfile'
+  args:
+    - /github/workspace

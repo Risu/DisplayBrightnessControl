@@ -1,0 +1,14 @@
+name: Check code formatting
+on:
+  pull_request:
+    branches: [ master, main, dev, feature/* ]
+
+jobs:
+  build:
+    name: qmlfmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code (no submodules)
+        uses: actions/checkout@v2
+      - name: Check with qmlfmt
+        uses: ./.github/actions/qml-format
